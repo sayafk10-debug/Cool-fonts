@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VIP Font Generator</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #0d0e15; color: #ffffff; text-align: center; padding: 20px; }
+        .container { max-width: 600px; margin: 0 auto; background: #161824; padding: 30px 20px; border-radius: 20px; box-shadow: 0 0 30px rgba(0, 255, 204, 0.2); border: 1px solid #00ffcc; }
+        h1 { color: #00ffcc; font-size: 32px; margin-bottom: 20px; }
+        input[type="text"] { width: 90%; padding: 15px; border: 2px solid #2a2d42; border-radius: 12px; background-color: #1f2235; color: #fff; font-size: 18px; outline: none; text-align: center; }
+        input[type="text"]:focus { border-color: #00ffcc; }
+        .result-box { margin-top: 25px; text-align: left; }
+        .font-item { background: #1f2235; padding: 15px; margin-bottom: 12px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; }
+        .font-name { font-size: 11px; color: #00ffcc; display: block; margin-bottom: 5px; }
+        .font-text { font-size: 20px; }
+        .copy-btn { background: #00ffcc; color: #0d0e15; border: none; padding: 10px 15px; border-radius: 8px; cursor: pointer; font-weight: bold; }
+        .copy-btn.copied { background: #2ecc71; color: #fff; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>VIP Font Generator</h1>
+    <p>Type below and click copy!</p>
+    <input type="text" id="userInput" placeholder="Yahan apna naam likhein..." oninput="generateFonts()">
+    <div class="result-box" id="resultBox"></div>
+</div>
+
+<script>
+    const fontMaps = [
+        { name: "Script Style", map: { 'a': '𝖇', 'b': '𝖇', 'c': '𝖈', 'd': '𝖉', 'e': '𝖊', 'f': '𝖋', 'g': '𝖌', 'h': '𝖍', 'i': '𝖎', 'j': '𝖏', 'k': '𝖐', 'l': '𝖑', 'm': '𝖒', 'n': '𝖓', 'o': '𝖔', 'p': '𝖕', 'q': '𝖖', 'r': '𝖗', 's': '𝖘', 't': '𝖙', 'u': '𝖚', 'v': '𝖛', 'w': '𝖜', 'x': '𝖝', 'y': '𝖞', 'z': '𝖟' } },
+        { name: "Outline Style", map: { 'a': 'ax', 'b': '𝕓', 'c': '𝕔', 'd': '𝕕', 'e': '𝕖', 'f': '𝕗', 'g': '𝕘', 'h': '𝕙', 'i': '𝕚', 'j': '𝕛', 'k': '𝕜', 'l': '𝕝', 'm': '𝕞', 'n': '𝕟', 'o': '𝕠', 'p': '𝕡', 'q': '𝕢', 'r': '𝕣', 's': '𝕤', 't': '𝕥', 'u': '𝕦', 'v': '𝕧', 'w': '𝕨', 'x': '𝕩', 'y': '𝕪', 'z': '𝕫' } },
+        { name: "Cursive Style", map: { 'a': '𝓪', 'b': '𝓫', 'c': '𝓬', 'd': '𝓭', 'e': '𝓮', 'f': '𝓯', 'g': '𝓰', 'h': '𝓱', 'i': '𝓲', 'j': '𝓳', 'k': '𝓴', 'l': '𝓵', 'm': '𝓶', 'n': '𝓷', 'o': '𝓸', 'p': '𝓹', 'q': '𝓺', 'r': '𝓻', 's': '𝕤', 't': '𝓽', 'u': '𝓾', 'v': '𝓿', 'w': '𝔀', 'x': '𝔁', 'y': '𝔂', 'z': '𝔃' } },
+        { name: "Samurai Style", map: { 'a': '卂', 'b': '乃', 'c': '匚', 'd': '刀', 'e': '乇', 'f': '千', 'g': 'Ꮆ', 'h': '卄', 'i': '丨', 'j': 'ﾌ', 'k': 'Ҝ', 'l': 'ㄥ', 'm': '爪', 'n': '几', 'o': 'ㄖ', 'p': '卩', 'q': 'Ɋ', 'r': '尺', 's': '丂', 't': 'ㄒ', 'u': 'ㄩ', 'v': 'ᐪ', 'w': '山', 'x': '乂', 'y': 'ㄚ', 'z': '乙' } },
+        { name: "Bubble Style", map: { 'a': 'ⓐ', 'b': 'ⓑ', 'c': 'ⓒ', 'd': 'ⓓ', 'e': 'ⓔ', 'f': 'ⓕ', 'g': 'ⓖ', 'h': 'ⓗ', 'i': 'ⓘ', 'j': 'ⓙ', 'k': 'ⓚ', 'l': 'ⓛ', 'm': 'ⓜ', 'n': 'ⓝ', 'o': 'ⓞ', 'p': 'ⓟ', 'q': 'ⓠ', 'r': 'ⓡ', 's': 'ⓢ', 't': 'ⓣ', 'u': 'ⓤ', 'v': 'ⓥ', 'w': 'ⓦ', 'x': 'ⓧ', 'y': 'ⓨ', 'z': 'ⓩ' } }
+    ];
+
+    function generateFonts() {
+        const input = document.getElementById('userInput').value;
+        const resultBox = document.getElementById('resultBox');
+        resultBox.innerHTML = '';
+        if (!input) return;
+
+        fontMaps.forEach((font, index) => {
+            let transformed = input.split('').map(char => font.map[char.toLowerCase()] || char).join('');
+            const item = document.createElement('div');
+            item.className = 'font-item';
+            item.innerHTML = '<div><span class="font-name">' + font.name + '</span><span class="font-text" id="text-' + index + '">' + transformed + '</span></div>';
+            
+            const btn = document.createElement('button');
+            btn.className = 'copy-btn';
+            btn.innerText = 'Copy 📋';
+            btn.onclick = () => {
+                navigator.clipboard.writeText(transformed);
+                btn.innerText = 'Copied! ✅';
+                btn.classList.add('copied');
+                setTimeout(() => { btn.innerText = 'Copy 📋'; btn.classList.remove('copied'); }, 2000);
+            };
+            item.appendChild(btn);
+            resultBox.appendChild(item);
+        });
+    }
+</script>
+</body>
+</html>
